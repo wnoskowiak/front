@@ -17,7 +17,6 @@ function CurrentAim({ data }) {
   }
   const currAim = <div>Aktualnie celuję w: <pre>{data.DEFAULT}</pre></div>
   delete data.DEFAULT
-  console.log(Object.keys(data))
   const available = <div>Dostępne cele: <ul>{Object.keys(data).map((key) =>
     <li key = {key}>
       <ul><li>{key}</li><li>{data[key]}</li></ul>
