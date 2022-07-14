@@ -7,6 +7,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.record {
+  width: 550x;
+  border: 1px solid black;
+  overflow: hidden;
+}
+
+pre {
+  overflow-wrap: break-word;
+}
+
+.request {
+  width: 500px;
+  float:left;
+  border: 1px solid black;
+
+  overflow-wrap: break-word;
+}
+
+.reply {
+  width: 500px;
+  border: 1px solid black;
+
+  overflow-wrap: break-word;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
