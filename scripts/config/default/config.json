@@ -1,0 +1,45 @@
+{
+  "PROXIES": {
+    "URANUS": "http://uranus.devel.softax.local:6605/",
+
+    "C4": "http://127.0.0.1:5000"
+  },
+
+  "CONFIG": {
+    "technicalPort": 3000,
+
+    "port": 3025,
+
+    "appPort": 3015,
+
+    "seeLocal": false,
+
+    "paths": ["/api/"],
+
+    "serveTechnical": "/__proxy/",
+
+    "mocksEnabled": true
+  },
+
+    "RESERVED_ENDPOINTS": {
+      "setMocksUrl": "/set_mocks/",
+
+      "getHistory": "/history/",
+
+      "configGet": "/aims/",
+
+      "configEdit": "/change_aim/",
+
+      "getMocksUrl": "/get_mocks/",
+
+      "editMocksUrl": "/edit_mocks/"
+    },
+  
+    "FILEPATHS": {
+      "requestHistory": "/history/history.json",
+
+      "mockFilesPath": "/proxy-mocks/",
+      
+      "mockListFile": "/proxy-mocks/mocks/mocks.json"
+    }
+}
