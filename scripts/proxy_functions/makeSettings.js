@@ -25,7 +25,7 @@ function makeSettings(dir) {
 
     envMap = {
         "TECH_PORT": "technicalPort",
-        "PROXY_PORT": "port" ,
+        "PROXY_PORT": "port",
         "PROXY_APP_PORT": "appPort",
         "PROXY_LOCAL": "seeLocal"
     }
@@ -68,7 +68,7 @@ function makeSettings(dir) {
     SETTINGS["reservedHandlerMap"] = {};
 
     Object.keys(SETTINGS.RESERVED_ENDPOINTS).map((key) => {
-    SETTINGS.reservedHandlerMap[key] = handlers["handle" + key.charAt(0).toUpperCase() + key.slice(1)]
+        SETTINGS.reservedHandlerMap[SETTINGS.RESERVED_ENDPOINTS[key]] = handlers["handle" + key.charAt(0).toUpperCase() + key.slice(1)]
     })
 
     return SETTINGS

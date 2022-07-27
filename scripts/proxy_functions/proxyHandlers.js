@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const readLastLines = require("read-last-lines");
 const fs = require("fs");
 const helper = require(`./helperFunctions.js`)
+const setEdit = require("./settingsEdit.js")
 
 module.exports = {
   handleConfigEdit,
@@ -12,22 +13,7 @@ module.exports = {
   handleSetMocksUrl
 };
 
-function getMocks() {
-  SETTINGS["mocks"] = JSON.parse(
-    fs.readFileSync(`${SETTINGS.dir}${SETTINGS.FILEPATHS.mockListFile}`)
-  );
-}
-
-function updateMocks(url, file) {
-  SETTINGS.mocks[url] = { file: file, active: true };
-  fs.writeFileSync(
-    `${__dirname}${SETTINGS.FILEPATHS.mockListFile}`,
-    JSON.stringify(SETTINGS.mocks)
-  );
-  getMocks();
-}
-
-function handleSetMocksUrl(parsedBody, req, res) {
+function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
     
     function checkPath(str) {
       return /^[a-zA-Z0-9_.-/]*$/.test(str);
@@ -69,7 +55,7 @@ function handleSetMocksUrl(parsedBody, req, res) {
         JSON.stringify(parsedBody["content"])
       )
       .then(() => {
-        updateMocks(parsedBody["url"], fileName);
+        setEdit.updateMocks(parsedBody["url"], fileName);
       })
       .then(() => {
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -171,7 +157,7 @@ function handleSetMocksUrl(parsedBody, req, res) {
   }
   
   function handleGetMocksUrl(parsedBody, req, res) {
-    getMocks();
+    setEdit.getMocks();
     result = {};
     Object.keys(SETTINGS.mocks).map(function (key, inx) {
       result[key] = SETTINGS.mocks[key].active;
@@ -194,7 +180,7 @@ function handleSetMocksUrl(parsedBody, req, res) {
       failFunction();
       return;
     }
-    getMocks();
+    setEdit.getMocks();
     for (const endp of Object.keys(SETTINGS.mocks)) {
       if (!(parsedBody.visibility[endp] === undefined)) {
         SETTINGS.mocks[endp].active = !!parsedBody.visibility[endp];
@@ -204,7 +190,7 @@ function handleSetMocksUrl(parsedBody, req, res) {
       `${__dirname}${SETTINGS.FILEPATHS.mockListFile}`,
       JSON.stringify(SETTINGS.mocks)
     );
-    getMocks();
+    setEdit.getMocks();
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end("OK");
   }

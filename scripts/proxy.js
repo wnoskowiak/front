@@ -12,9 +12,7 @@ const setter = require("./proxy_functions/makeSettings.js");
 
 const SETTINGS = setter.makeSettings(__dirname)
 
-console.log(SETTINGS.reservedHandlerMap)
-
-
+/* -------------------------------------------------------------------------- */
 
 function delimiterFunc() {
   console.log(
@@ -77,8 +75,6 @@ function checkIfDone(mark) {
     delete currentMarks[mark];
   }
 }
-
-
 
 console.log(`
  _____    _____     ____   __   __ __     __
@@ -185,6 +181,8 @@ var server = http.createServer(function (req, res) {
 
   let reqBody = [];
 
+  console.log(req.headers.referer)
+
   var toTech =
     (server.address().address === "127.0.0.1"
       ? req.headers.referer ===
@@ -250,12 +248,19 @@ var server = http.createServer(function (req, res) {
 
       currentMarks[req.mark]["request"] = item;
 
+      console.log(parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/"))
+      console.log(SETTINGS.reservedHandlerMap)
+      console.log(SETTINGS.reservedHandlerMap[
+        parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
+      ])
+      console.log(toTech)
       if (
         SETTINGS.reservedHandlerMap[
         parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
         ] &&
         toTech
       ) {
+        console.log("dupa")
         SETTINGS.reservedHandlerMap[
           parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
         ](parsedBody, req, res);
