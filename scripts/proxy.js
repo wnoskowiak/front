@@ -261,11 +261,6 @@ var server = http.createServer(function (req, res) {
 
       currentMarks[req.mark]["request"] = item;
 
-      console.log(parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/"))
-      console.log(SETTINGS.reservedHandlerMap)
-      console.log(SETTINGS.reservedHandlerMap[
-        parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
-      ])
       if (
         SETTINGS.reservedHandlerMap[
         parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
@@ -313,7 +308,7 @@ var server = http.createServer(function (req, res) {
   }
 
   if (req.url.startsWith("/static/config/")) {
-    const target = SETTINGS.CONFIG.active.replace(/api$/, "");
+    const target = SETTINGS.PROXIES[SETTINGS.CONFIG.active].replace(/api$/, "");
     return proxy.web(req, res, { target });
   }
 
@@ -324,9 +319,9 @@ var server = http.createServer(function (req, res) {
     delimiterFunc();
     console.log(
       "Proxied request final URL:",
-      SETTINGS.CONFIG.active.cyan + parsedUrl.pathname.cyan
+      SETTINGS.PROXIES[SETTINGS.CONFIG.active].cyan + parsedUrl.pathname.cyan
     );
-    return proxy.web(req, res, { target: SETTINGS.CONFIG.active });
+    return proxy.web(req, res, { target: SETTINGS.PROXIES[SETTINGS.CONFIG.active] });
   } else {
     if (SETTINGS.CONFIG.seeLocal) {
       console.log("Local request".cyan);
