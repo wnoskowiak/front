@@ -13,7 +13,7 @@ module.exports = {
   handleSetMocksUrl
 };
 
-function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
+function handleSetMocksUrl(SETTINGS, parsedBody, req, res, setEd) {
     
     function checkPath(str) {
       return /^[a-zA-Z0-9_.-/]*$/.test(str);
@@ -51,11 +51,11 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
         .digest("hex") + ".json";
     fs.promises
       .writeFile(
-        `${__dirname}/${SETTINGS.FILEPATHS.mockFilesPath}/${fileName}`,
+        `${SETTINGS.dir}/${SETTINGS.FILEPATHS.mockFilesPath}/${fileName}`,
         JSON.stringify(parsedBody["content"])
       )
       .then(() => {
-        setEdit.updateMocks(parsedBody["url"], fileName);
+        setEd.updateMocks(parsedBody["url"], fileName);
       })
       .then(() => {
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -67,24 +67,24 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
       });
   }
   
-  function handleGetHistory(parsedBody, req, res) {
+  function handleGetHistory(SETTINGS, parsedBody, req, res, setEd) {
 
     async function gu(lines) {
       if (lines >= 0) {
         return readLastLines.read(
-          `${__dirname}${SETTINGS.FILEPATHS.requestHistory}`,
+          `${SETTINGS.dir}${SETTINGS.FILEPATHS.requestHistory}`,
           lines
         );
       }
       return await fs.promises.readFile(
-        `${__dirname}${SETTINGS.FILEPATHS.requestHistory}`,
+        `${SETTINGS.dir}${SETTINGS.FILEPATHS.requestHistory}`,
         "utf8"
       );
     }
 
     if (parsedBody.id) {
       helper.searchStream(
-        `${__dirname}${SETTINGS.FILEPATHS.requestHistory}`,
+        `${SETTINGS.dir}${SETTINGS.FILEPATHS.requestHistory}`,
         parsedBody.id
       ).then((dat) => {
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -115,7 +115,7 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
     console.log(`odczyt historii`);
   }
   
-  function handleConfigEdit(parsedBody, req, res) {
+  function handleConfigEdit(SETTINGS, parsedBody, req, res, setEd) {
 
     function checkAim(aim) {
       if (!(aim === "DEFAULT") && !(SETTINGS.PROXIES[aim] === undefined)) {
@@ -139,7 +139,7 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
     res.end();
   }
   
-  function handleConfigGet(parsedBody, req, res) {
+  function handleConfigGet(SETTINGS, parsedBody, req, res, setEd) {
 
     function readAims() {
       curr = helper.getActiveName(SETTINGS)
@@ -156,8 +156,8 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
     res.end(JSON.stringify(readAims()));
   }
   
-  function handleGetMocksUrl(parsedBody, req, res) {
-    setEdit.getMocks();
+  function handleGetMocksUrl(SETTINGS, parsedBody, req, res, setEd) {
+    setEd.getMocks();
     result = {};
     Object.keys(SETTINGS.mocks).map(function (key, inx) {
       result[key] = SETTINGS.mocks[key].active;
@@ -166,7 +166,7 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
     res.end(JSON.stringify(result));
   }
   
-  function handleEditMocksUrl(parsedBody, req, res) {
+  function handleEditMocksUrl(SETTINGS, parsedBody, req, res, setEd) {
     function failFunction() {
       res.writeHead(400, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ response: "coś-nie-wyszło" }));
@@ -180,17 +180,17 @@ function handleSetMocksUrl(parsedBody, req, res, SETTINGS) {
       failFunction();
       return;
     }
-    setEdit.getMocks();
+    setEd.getMocks();
     for (const endp of Object.keys(SETTINGS.mocks)) {
       if (!(parsedBody.visibility[endp] === undefined)) {
         SETTINGS.mocks[endp].active = !!parsedBody.visibility[endp];
       }
     }
     fs.writeFileSync(
-      `${__dirname}${SETTINGS.FILEPATHS.mockListFile}`,
+      `${SETTINGS.dir}${SETTINGS.FILEPATHS.mockListFile}`,
       JSON.stringify(SETTINGS.mocks)
     );
-    setEdit.getMocks();
+    setEd.getMocks();
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end("OK");
   }

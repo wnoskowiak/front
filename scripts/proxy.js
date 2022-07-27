@@ -21,6 +21,21 @@ function delimiterFunc() {
   );
 }
 
+function getMocks() {
+  SETTINGS["mocks"] = JSON.parse(
+      fs.readFileSync(`${SETTINGS.dir}${SETTINGS.FILEPATHS.mockListFile}`)
+  );
+}
+
+function updateMocks(url, file) {
+  SETTINGS.mocks[url] = { file: file, active: true };
+  fs.writeFileSync(
+      `${SETTINGS.dir}${SETTINGS.FILEPATHS.mockListFile}`,
+      JSON.stringify(SETTINGS.mocks)
+  );
+  getMocks();
+}
+
 /* -------------------------------------------------------------------------- */
 
 function handleMocks(parsedUrl, res, req) {
@@ -181,8 +196,6 @@ var server = http.createServer(function (req, res) {
 
   let reqBody = [];
 
-  console.log(req.headers.referer)
-
   var toTech =
     (server.address().address === "127.0.0.1"
       ? req.headers.referer ===
@@ -253,17 +266,15 @@ var server = http.createServer(function (req, res) {
       console.log(SETTINGS.reservedHandlerMap[
         parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
       ])
-      console.log(toTech)
       if (
         SETTINGS.reservedHandlerMap[
         parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
         ] &&
         toTech
       ) {
-        console.log("dupa")
         SETTINGS.reservedHandlerMap[
           parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
-        ](parsedBody, req, res);
+        ](SETTINGS, parsedBody, req, res, {"getMocks": getMocks, "updateMocks": updateMocks});
       }
 
       if (SETTINGS.CONFIG.mocksEnabled) {

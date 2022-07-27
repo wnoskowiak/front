@@ -1,10 +1,5 @@
 const fs = require("fs");
 
-module.exports = {
-    getMocks,
-    updateMocks
-};
-
 function getMocks() {
     SETTINGS["mocks"] = JSON.parse(
         fs.readFileSync(`${SETTINGS.dir}${SETTINGS.FILEPATHS.mockListFile}`)
@@ -19,3 +14,8 @@ function updateMocks(url, file) {
     );
     getMocks();
 }
+
+module.exports = {
+    getMocks,
+    updateMocks
+};
