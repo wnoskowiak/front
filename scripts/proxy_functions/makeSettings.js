@@ -50,7 +50,7 @@ function makeSettings(dir) {
 
     SETTINGS.CONFIG["active"] =
         SETTINGS.PROXIES[(process.env.PROXY_TARGET || "").toUpperCase()] ||
-        SETTINGS.PROXIES.DEFAULT;
+        SETTINGS.PROXIES[SETTINGS.PROXIES.DEFAULT];
 
     SETTINGS["reserved"] = Object.keys(SETTINGS.RESERVED_ENDPOINTS).map((key) => {
         return (

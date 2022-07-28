@@ -22,8 +22,19 @@ function createMock(adress, body) {
   }).then((r) => r.status);
 }
 
-function EditMocks({ body, slug }) {
-  const [val, setVal] = React.useState(null);
+function EditMocks({ body, slug, handler }) {
+  const [uu, setUu] = React.useState("");
+  const [val, setVal] = React.useState("wpisz dane");
+
+  function handleMockVisEdit(event) {
+    event.preventDefault();
+    modMock(event.target.name, event.target.checked);
+    getActiveMocks().then((dat) => setUu(dat));
+  }
+
+  React.useEffect(() => {
+    getActiveMocks().then((dat) => setUu(dat))
+  },[val])
 
   React.useEffect(() => {
     if (!body) {
@@ -32,21 +43,35 @@ function EditMocks({ body, slug }) {
     createMock(slug, body).then((dat) => {
       if (dat === 200) {
         setVal("OK");
+        // getActiveMocks().then((dat) => setUu(dat))
       } else {
         setVal("coś nie wyszło");
       }
+
     });
   }, [body, slug]);
 
   if (!body) {
-    return "wpisz dane";
+    // setVal("wpisz dane");
+    // getActiveMocks().then((dat) => setUu(dat))
   }
 
-  if (!val) {
-    return "...";
-  }
+  // if (!val) {
+  //   setVal("...");
+  // }
 
-  return <pre>{val}</pre>;
+  return <div>
+    <div>
+      <pre>{val}</pre>
+    </div>
+    <div>
+      <h2>Aktywne Mocki</h2>
+      <MocksOnOff data={uu} handler={handleMockVisEdit} />
+      <hr />
+    </div>
+  </div>
+
+  // return <pre>{val}</pre>;
 }
 
 function MocksOnOff({ data, handler }) {
@@ -72,16 +97,11 @@ function BB() {
   const [sendBody, setSendBody] = React.useState("");
   const [err, setErr] = React.useState("False");
   const [body, setBody] = React.useState("");
-  const [uu, setUu] = React.useState("");
-
-  React.useEffect(() => {
-    getActiveMocks().then((dat) => setUu(dat));
-  }, [sendBody, slug]);
 
   function handleMockVisEdit(event) {
     event.preventDefault();
     modMock(event.target.name, event.target.checked);
-    getActiveMocks().then((dat) => setUu(dat));
+    // getActiveMocks().then((dat) => setUu(dat));
   }
 
   function handleBodyChange(event) {
@@ -128,12 +148,9 @@ function BB() {
           </div>
         </form>
         <hr />
-        <EditMocks body={sendBody} slug={slug} />
       </div>
       <div>
-        <h2>Aktywne Mocki</h2>
-        <MocksOnOff data={uu} handler={handleMockVisEdit} />
-        <hr />
+          <EditMocks body={sendBody} slug={slug} />
       </div>
     </div>
   );

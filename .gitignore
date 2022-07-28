@@ -24,3 +24,5 @@ yarn-error.log*
 
 .venv
 scripts/tempCodeRunnerFile.py
+
+scripts/front

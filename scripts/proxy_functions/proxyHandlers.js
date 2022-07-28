@@ -101,16 +101,16 @@ function handleGetHistory(SETTINGS, parsedBody, req, res, setEd) {
     return;
   }
 
-  const lines = parsedBody 
-    ? typeof (parsedBody.recors) === "string" 
-      ? parsedBody.records === "all" 
-        ? -1 
-        : parseInt(parsedBody.records) 
+  const lines = parsedBody
+    ? typeof (parsedBody.recors) === "string"
+      ? parsedBody.records === "all"
+        ? -1
+        : parseInt(parsedBody.records)
           ? parseInt(parsedBody.records)
           : 20
-      : Number.isInteger(parsedBody.records) 
-        ? parsedBody.records 
-        : 20 
+      : Number.isInteger(parsedBody.records)
+        ? parsedBody.records
+        : 20
     : 20
 
   gu(lines).then((dat) => {
@@ -139,7 +139,7 @@ function handleConfigEdit(SETTINGS, parsedBody, req, res, setEd) {
     res.end();
     return;
   }
-  SETTINGS.CONFIG.active = SETTINGS.PROXIES[parsedBody.aim];
+  setEd.setAim(parsedBody.aim)
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end();
 }

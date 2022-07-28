@@ -36,6 +36,10 @@ function updateMocks(url, file) {
   getMocks();
 }
 
+function setAim(aim) {
+  SETTINGS.CONFIG.active = SETTINGS.PROXIES[aim]
+}
+
 /* -------------------------------------------------------------------------- */
 
 function handleMocks(parsedUrl, res, req) {
@@ -269,7 +273,7 @@ var server = http.createServer(function (req, res) {
       ) {
         SETTINGS.reservedHandlerMap[
           parsedUrl.path.replace(SETTINGS.CONFIG.serveTechnical, "/")
-        ](SETTINGS, parsedBody, req, res, {"getMocks": getMocks, "updateMocks": updateMocks});
+        ](SETTINGS, parsedBody, req, res, {"getMocks": getMocks, "updateMocks": updateMocks, "setAim": setAim});
       }
 
       if (SETTINGS.CONFIG.mocksEnabled) {
@@ -301,12 +305,6 @@ var server = http.createServer(function (req, res) {
     return;
   }
 
-  if (toTech) {
-    return proxy.web(req, res, {
-      target: `http://localhost:${SETTINGS.CONFIG.technicalPort}`,
-    });
-  }
-
   if (req.url.startsWith("/static/config/")) {
     const target = SETTINGS.PROXIES[SETTINGS.CONFIG.active].replace(/api$/, "");
     return proxy.web(req, res, { target });
@@ -315,25 +313,35 @@ var server = http.createServer(function (req, res) {
   const isPathToApi = SETTINGS.CONFIG.paths.some((apiPath) =>
     parsedUrl.pathname.startsWith(apiPath)
   );
+
   if (isPathToApi) {
     delimiterFunc();
     console.log(
       "Proxied request final URL:",
-      SETTINGS.PROXIES[SETTINGS.CONFIG.active].cyan + parsedUrl.pathname.cyan
+      SETTINGS.CONFIG.active.cyan + parsedUrl.pathname.cyan
     );
-    return proxy.web(req, res, { target: SETTINGS.PROXIES[SETTINGS.CONFIG.active] });
-  } else {
-    if (SETTINGS.CONFIG.seeLocal) {
-      console.log("Local request".cyan);
-    }
+    return proxy.web(req, res, { target: SETTINGS.CONFIG.active });
+  } 
 
+  if (toTech) {
     return proxy.web(req, res, {
-      target: `http://localhost:${SETTINGS.CONFIG.appPort}`,
+      target: `http://localhost:${SETTINGS.CONFIG.technicalPort}`,
     });
   }
+
+
+  if (SETTINGS.CONFIG.seeLocal) {
+    console.log("Local request".cyan);
+  }
+
+  return proxy.web(req, res, {
+    target: `http://localhost:${SETTINGS.CONFIG.appPort}`,
+  });
+
 });
 
 server.on("upgrade", function (req, socket, head) {
+  console.log(`ws://localhost:${SETTINGS.CONFIG.appPort}`)
   proxy.ws(req, socket, head, {
     target: `ws://localhost:${SETTINGS.CONFIG.appPort}`,
   });

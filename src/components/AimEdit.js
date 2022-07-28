@@ -90,7 +90,7 @@ function CC() {
   const [aim, setAim] = React.useState("");
 
   React.useEffect(() => {
-    fetchCurrentAim().then((dat) => setCurrAim(dat));
+    fetchCurrentAim().then((dat) => {setCurrAim(dat)});
   }, [aim]);
 
   function handleConfigChange(event) {
