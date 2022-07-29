@@ -108,6 +108,7 @@ var proxy = httpProxy.createProxyServer({
   changeOrigin: true,
   secure: false,
   ws: true,
+  proxyTimeout: 500
 });
 
 console.log(
@@ -117,7 +118,7 @@ console.log(
 );
 
 proxy.on("error", function (err, req, res) {
-  if (res && !res.writeHead && !res.end) {
+  if (res && res.writeHead && res.end) {
     res.writeHead(502, {
       "Content-Type": "text/plain",
     });
@@ -236,7 +237,6 @@ var server = http.createServer(function (req, res) {
           parsedBody = null;
         }
       }
-
       var item = {
         from: req.connection.remoteAddress,
         url: parsedUrl.pathname,

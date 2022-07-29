@@ -1,5 +1,6 @@
 import React from "react";
 import fetcher from "../functions/fetcher";
+import createMock from "./fetchers/createMock";
 
 function fetchHistory(rec, id) {
   return fetcher(`http://localhost:3025/__proxy/history/`, {
@@ -9,7 +10,6 @@ function fetchHistory(rec, id) {
 }
 
 function Body({ body }) {
-  console.log(body);
   if (!(body.body === undefined)) {
     if (body.body.isJSON) {
       return (
@@ -27,16 +27,16 @@ function Body({ body }) {
   return;
 }
 
-function History({ data }) {
-  const res = [...data].map((record, i) => (
+function History({ data, handler }) {
+  const res = [...data].reverse().map((record, i) => (
     <li key={i}>
-      <div class="record" key={i}>
+      <div id="record" className="record" key={i}>
         <h3>{record.id}</h3>
-        <div class="request">
+        <div id="request" className="request">
           <div>
             nadawca: <pre>{record.request.from}</pre>
           </div>
-          <div>
+          <div id="url">
             URL: <pre>{record.request.url}</pre>
           </div>
           <div>
@@ -47,15 +47,16 @@ function History({ data }) {
             <pre>{JSON.stringify(record.request.body, null, 2)}</pre>
           </div>
         </div>
-        <div class="reply">
+        <div id="reply" className="reply">
           <div>
             status: <pre>{record.reply.status}</pre>
           </div>
-          <div>
+          <div id="replyData">
             data: <pre>{record.reply.date}</pre>
           </div>
           <Body body={record.reply} />
         </div>
+        <button onClick={() => handler(record)}>utwórz mock</button>
       </div>
     </li>
   ));
@@ -67,12 +68,21 @@ function DD() {
 
   function handleHistoryRequest(event) {
     event.preventDefault();
-    console.log(event.target.elements.numOfRecords.value);
-    console.log(event.target.elements.recordID.value);
     fetchHistory(
       event.target.elements.numOfRecords.value,
       event.target.elements.recordID.value
     ).then((dat) => setHistory(dat));
+  }
+
+  function handleAddMock(record) {
+    var url = record.request.url
+    var bod = "{}"
+    if(!(record.reply.body === undefined)){
+      if(record.reply.body.isJSON) {
+        bod = JSON.stringify(record.reply.body.content, null, 2)
+      }
+    }
+    createMock(url,bod)
   }
 
   return (
@@ -92,7 +102,7 @@ function DD() {
         </div>
       </form>
       <hr />
-      <History data={history} />
+      <History data={history} handler={handleAddMock} />
     </div>
   );
 }

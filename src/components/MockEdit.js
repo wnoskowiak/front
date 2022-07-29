@@ -1,5 +1,6 @@
 import React from "react";
 import fetcher from "../functions/fetcher";
+import createMock from "./fetchers/createMock";
 
 function getActiveMocks(newAim) {
   return fetcher(`http://localhost:3025/__proxy/get_mocks/`, {}).then((r) =>
@@ -13,13 +14,6 @@ function modMock(mock, state) {
   return fetcher(`http://localhost:3025/__proxy/edit_mocks/`, {
     visibility: dat,
   });
-}
-
-function createMock(adress, body) {
-  return fetcher(`http://localhost:3025/__proxy/set_mocks/`, {
-    url: adress,
-    content: JSON.parse(body),
-  }).then((r) => r.status);
 }
 
 function EditMocks({ body, slug, handler }) {
